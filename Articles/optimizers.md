@@ -85,5 +85,41 @@ As you can see SGD updates are way sharper, however they converge optimum, just 
 
 ---
 
+### Smarter Optimizers
+These are optimizers with special tricks that improve performance.
+####  Momentum Gradient Descent
+Momentum Optimizer is super cool. Remember that problem with narrow cost function bowl?
+Momentum addresses this issue improving meaningful updates.
+Useless updates are oscillations jumping in the opposite directions.
+We'd better dampen them & that what momentum does!
+Update rule:<br>
+$$v_t = \beta v_{t-1} +\alpha \nabla J(\theta_{t-1})$$
+$$\theta_t = \theta_{t-1} - v_t$$
+
+Ok, let's clarify what's happening here.<br>
+We have a variable $v$ (momentum term) that **accumulates**  previous updates scaled by $\beta$ (typically 0.9).
+It gives us an interesting property of "forgetting" old updates & most importantly, acceleration in the relative direction & dampening of irrelevant updates (they are opposite directions (opposite signs), so it decreases oscillating updates.<br>
+No momentum:<br>
+<img src="https://people.willamette.edu/~gorr/classes/cs449/figs/valley1.gif" width=35%><br>
+Momentum:<br>
+<img src="https://people.willamette.edu/~gorr/classes/cs449/figs/valley2.gif" width=35%><br>
+*Image taken from [here](https://people.willamette.edu/~gorr/classes/cs449/momrate.html)*
+
+### Nesterov Accelerated Gradient (NAG) 
+NAG follows Momentum optimizer idea improving it with **Look Ahead Term**.
+Updates perform smarter, because optimizer looks forward.
+It is a small adjustment to Momentum with a partial derivative of cost taken w.r.t to **approximation of update parameters**
+Update rule:<br>
+$$v_t = \beta v_{t-1} + \alpha \nabla J(\theta_{t-1} - \beta v_{t-1})$$
+$$\theta_t = \theta_{t-1} -v_t$$
+<br>
+Easy and clever.<br>
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_-et8h51sUBJOeSTXIcv8Jb7RXliVD4yAVw&s" width=60%><br>
+*Image taken from [here](https://www.google.com/url?sa=i&url=https%3A%2F%2Fpaperswithcode.com%2Fmethod%2Fnesterov-accelerated-gradient&psig=AOvVaw1bAH-zGwYX-uyKEj3o8dy0&ust=1734693737371000&source=images&cd=vfe&opi=89978449&ved=0CBcQjhxqFwoTCKi51fXbs4oDFQAAAAAdAAAAABAJ)*
+Instead of adding accumulated gradients to gradient calculated at current timestep(blue vectors) we first of all, make a previously accumulated gradients jump(brown vector), then we calculate gradient at that point(red vector) and add them up (resulting green vector).<br>
+Easy enough.
+
+---
+
 GUIDE IN DEVELOPMENT.
 KURW.AI
