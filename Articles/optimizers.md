@@ -191,7 +191,35 @@ And that's a good thing. I love when such powerful ideas are simple and clean.
 Now let's see a few adjustments of Adam and move on to conclusion.
 
 ### Adamax
+Adamax is an adjustment to Adam, which is more robust to outliers.
+Instead of using $l_2$ norm Adamax uses $l_\infty$ norm.
+Instead of scaling $\alpha$ by $\hat v_t$ we scale it by **the largest gradient**
+$$u_t = \max(\beta _2 \cdot v_{t-1}, |g_t|)$$
+$$\theta_{t+1} = \theta_t - {\alpha \over u_t}\hat m_t$$
+
+### Nadam
+Nadam combines Nesterov Momentum and RMSprop lr scaling.
+Update rule is similar, but instead of using $\hat m_{t-1}$ we use $\hat m_t$
+Update rule:
+
+$$\theta_{t+1} = \theta_t - {\alpha \over \sqrt{\hat v_t} + \epsilon}(\beta_1 \hat m_t + {(1 - \beta_t)g_t \over 1 - \beta^t_1})$$
+
 ---
 
-GUIDE IN DEVELOPMENT.
-KURW.AI
+## Conclusion.
+Foof... That's it.
+Not gonna lie, I put a lot of effort and time in this article.
+It wasn't only recap of the topic for me, but also it was a fresh look for me.
+Despite difficulty, it was great.
+World of optimizers is diverse and beautiful. In this article I mentioned only most common optimizer, but it's much more out there to discover.
+Thanks to:
+1) [Sebastian Ruder paper](https://arxiv.org/abs/1609.04747) - This paper was my guidance to optimizers when I started studying the topic.
+2) Geoffrey Hinton - especially for RMSprop
+3) Authors of pictures used in this article.
+
+Recommend to read on StackEdit (md renders shitty on GH)
+written by [Cheslaff](https://github.com/Cheslaff)
+last edit: 16:21 Dec 21 2024 <br>
+
+---
+KURW.AI | Cheslaff | 2024🎄
