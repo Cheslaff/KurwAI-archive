@@ -17,8 +17,8 @@
 - - Momentum
 - - Nesterov Accelerated Gradient
 - - Adagrad
-- - Adadelta
 - - RMSprop
+- - AdaDelta
 - - Adam
 - - AdaMax
 - - Nadam
@@ -119,6 +119,78 @@ Easy and clever.<br>
 Instead of adding accumulated gradients to gradient calculated at current timestep(blue vectors) we first of all, make a previously accumulated gradients jump(brown vector), then we calculate gradient at that point(red vector) and add them up (resulting green vector).<br>
 Easy enough.
 
+### AdaGrad
+Adaptive Gradient (short: AdaGrad) is an optimizer scaling learning rate for parameter updates individually.
+The problem we face with vanilla gradient descent are meaningless updates in the direction of the steepest descent.
+We could make smaller steps for steep descent directions and larger updates for less steep directions.
+**Intuitive Example from Real Life:** 
+Imagine you are hiking down the hill (for programmers it may be hard to imagine touching grass).
+You would make smaller steps in the direction with steep descent, because you don't want to fall off a cliff (do you?).
+
+That's how Adagrad works. It accumulates *squared gradients* for each parameter in a *diagonal matrix*. $G$
+
+Update rule:<br>
+
+$$g_{t,i} = \nabla J(\theta_{t, i})$$
+$$G_{ii} = \sum^T_{t=1} g^2_{t,i}$$
+$$\theta_{t+1, i} = \theta_t - {\alpha \over \sqrt{G_{t,ii} + \epsilon}} \cdot g_{t,i}$$
+<br>Epsilon prevents division by 0
+
+### RMSprop
+RMSprop developed by Geoffrey Hinton and presented on his coursera course is an improvement to AdaGrad optimizer.
+The problem with AdaGrad is **constantly shrinking** learning rate.
+Sum of squared gradients constantly grows making parameter updates smaller and smaller through time.
+RMSprop addresses this problem by using running average instead of summation.
+Running average, as we now it from momentum has a property of "forgetting", so it fits perfectly.
+Update Rule:
+<br>
+$$E[g^2]_t = \beta E[g^2]_{t-1} + (1 - \beta)g^2_t$$
+$$\theta_{t+1} = \theta_{t} - {\alpha \over \sqrt{E[g^2]_t + \epsilon}}\cdot g_t$$
+<br>
+Now you can see that most of the optimizers are either adjustments of already existing ones, or ideas from 2 existing optimizers combined. This gives me feeling optimizers are like pokemons)
+
+### AdaDelta
+AdaDelta also uses running average of squared gradients, but **it scales running average of previous updates by the running average of squared gradients**.
+Yeah, in AdaDelta we do not explicitly specify learning rate $\alpha$, instead we scale updates fully autonomously.
+Personally, I find it to be a great advantage of AdaDelta, because learning rate is such a nasty hyperparameter & it's good to be fully independent from it.
+
+Why this works.
+If previous updates for parameter are big than we'll scale a big number getting number big enough.
+Otherwise, if our updates history is small we will make small update.
+
+Update Rule:
+<br>
+$$E[g^2]_t = \beta E[g^2]_{t-1} + (1 - \beta)g^2_t$$
+$$E[\Delta \theta^2]_t = \beta E[\Delta \theta^2]_{t-1} + (1 - \beta)\Delta \theta^2_t$$
+$$\Delta \theta_t = -{\sqrt{E[\Delta \theta^2]_{t-1} + \epsilon} \over \sqrt{E[g^2]_t + \epsilon}}$$$$\theta_{t+1} = \theta_t + \Delta \theta_t$$
+<br>
+
+Despite Update rule is complex on paper, it's enough to understand the main principle of how AdaDelta works.
+
+## ADAM
+This guy's text is larger on purpose. Adam is one of the best and main optimizers in DL.
+It's really common to see it in many Deep Learning projects. When I was an amateur who played around with Keras and didn't know any theoretical aspects I always used Adam and it performed well. So let's find out why it's this good!
+
+It scales learning rate like RMSprop and stores running average of gradients like Momentum does.
+Yeah, it's yet another pokemon, whose mommy is RMSprop and whose daddy is Momentum.
+
+Running average of momentum and lr scaler:
+$$m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$$
+$$v_t = \beta_2 v_{t-1} + (1 - \beta_2)g^2_t$$
+Problem:
+$m_t$ and $v_t$ are initialized as zeros vectors, so we want to apply bias-correction.
+$$\hat m_t = {m_t \over 1 - \beta^t_1}$$
+$$\hat v_t = {v_t \over 1 - \beta^t_2}$$
+$\beta_1$ and $\beta_2$ are values between 0 and 1 raising them to the power of $t$ will slowly turn them to zeros on higher iterations. I find this bias correction charmingly clever.
+
+Update Rule:
+$$\theta_{t+1} = \theta_t - {\alpha \over \sqrt{\hat v_t + \epsilon}}\hat m_t$$
+
+Yeah... beloved gigachad optimizer is that simple! It's just a mixture of 2 cool concepts put together in a clever and neat way!
+And that's a good thing. I love when such powerful ideas are simple and clean.
+Now let's see a few adjustments of Adam and move on to conclusion.
+
+### Adamax
 ---
 
 GUIDE IN DEVELOPMENT.
